@@ -2,11 +2,17 @@ import requests
 from flask import Flask, Response
 from bs4 import BeautifulSoup
 import json
+import urllib.request
+import shutil
+
 app = Flask(__name__)
 
 urlGlobal = 'http://repositorio.uniceub.br'
 @app.route('/')
-def hello_world():
+def index():
+
+    # download()
+
     primeiroValor = [] ;
     segundoValor = [] ;
 
@@ -33,6 +39,7 @@ def hello_world():
     return Response(json.dumps(valores), mimetype='application/json')
 
 
+
 def primeiroPC(href):
     url = urlGlobal + href
     source_code = requests.get(url)
@@ -55,6 +62,12 @@ def segundoPC(href):
            href = link.get('href')
            # print(urlGlobal+href)
            return {'linkPDF':urlGlobal+href}
+
+def download():
+    url = 'http://repositorio.uniceub.br/bitstream/123456789/3139/2/20516680.pdf'
+
+    with urllib.request.urlopen(url) as response, open("novoarquivo", 'wb') as out_file:
+        shutil.copyfileobj(response, out_file)
 
 if __name__ == '__main__':
     app.run(debug=True)
