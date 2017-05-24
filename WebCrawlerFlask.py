@@ -2,8 +2,10 @@ import requests
 from flask import Flask, Response
 from bs4 import BeautifulSoup
 import json
-import urllib.request
+# import urllib.request
+from six.moves import urllib
 import shutil
+
 
 app = Flask(__name__)
 
@@ -35,6 +37,8 @@ def index():
            # print(href)
            segundoValor.append(primeiroPC(href))
 
+     # segundoPC("/handle/123456789/3155")
+
     valores = primeiroValor + segundoValor
     return Response(json.dumps(valores), mimetype='application/json')
 
@@ -56,12 +60,20 @@ def segundoPC(href):
     url = urlGlobal + href
     source_code = requests.get(url)
     plain_text = source_code.text
+
     soup = BeautifulSoup(plain_text, "html")
+
+    getNome = soup.find_all('td', {'class': 'metadataFieldValue'}, limit=2)
+    novonome = ' '.join(str(t) for t in getNome).decode('utf8')
+
+
+    print(getNome)
+
     for td in soup.find_all('td', {'align': 'center'}):
        for link in td.find_all('a'):
            href = link.get('href')
            # print(urlGlobal+href)
-           return {'linkPDF':urlGlobal+href}
+           return {'linkPDF': novonome + " " + urlGlobal+href}
 
 def download():
     url = 'http://repositorio.uniceub.br/bitstream/123456789/3139/2/20516680.pdf'
